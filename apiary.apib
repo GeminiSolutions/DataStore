@@ -13,52 +13,15 @@ This generates a list of all available items
 
 + Response 200 (application/json)
 
-        [
-            {
+        {
+            "item_id": {
                 "key": "value"
             }
-        ]
+        }
 
 ### Create a New Item [POST]
 
 This allows creating a new item
-
-+ Request (application/json)
-
-        {
-            "ley": "value"
-        }
-
-+ Response 201 (application/json)
-
-    + Headers
-
-            Location: /items/{item_id}
-
-    + Body
-
-            {
-                "ley": "value"
-            }
-
-
-## Item [/items/{item_id}]
-
-### Retrieve an Existing Item [GET]
-
-This retrieves the specified item
-
-+ Response 200 (application/json)
-
-        [
-            {
-                "key": "value"
-            }
-        ]
-
-### Update an Existing Item [PUT]
-
-This allows updating an existing item
 
 + Request (application/json)
 
@@ -77,6 +40,48 @@ This allows updating an existing item
             {
                 "key": "value"
             }
+
+
+## Item Identifiers Collection [/items/item_ids]
+
+### List All Items [GET]
+
+This generates a list of all available items
+
++ Response 200 (application/json)
+
+        [
+            "item_id"
+        ]
+
+
+## Item [/items/{item_id}]
+
+### Retrieve an Existing Item [GET]
+
+This retrieves the specified item
+
++ Response 200 (application/json)
+
+        {
+            "key": "value"
+        }
+
+### Update an Existing Item [PUT]
+
+This allows updating an existing item
+
++ Request (application/json)
+
+        {
+            "key": "value"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "key": "value"
+        }
 
 ### Delete an Exisiting Item [DELETE]
 

@@ -21,7 +21,7 @@ This generates a list of all available items.
 
         [
             {
-                "id": id
+                "id": 100
                 "key": "value"
             }
         ]
@@ -41,7 +41,7 @@ This allows creating a new item.
     + Body
 
             {
-                "id": id
+                "id": 100
                 "key": "value"
             }
 
@@ -72,7 +72,7 @@ This generates a list of identifiers for all available items.
 + Response 200 (application/json)
 
         [
-            id
+            100
         ]
 
 
@@ -85,7 +85,7 @@ This retrieves the specified item.
 + Response 200 (application/json)
 
         {
-            "id": id
+            "id": 100
             "key": "value"
         }
 
@@ -96,14 +96,14 @@ This allows updating an existing item.
 + Request (application/json)
 
         {
-            "id": id
+            "id": 100
             "key": "value"
         }
 
 + Response 200 (application/json)
 
         {
-            "id": id
+            "id": 100
             "key": "value"
         }
 

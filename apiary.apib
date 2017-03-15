@@ -88,10 +88,16 @@ This retrieves the specified item.
 
 + Response 200 (application/json)
 
-        {
-            "id": 100,
-            "key": "value"
-        }
+    + Headers
+
+            Last-Modified: {date}
+
+    + Body
+
+            {
+                "id": 100,
+                "key": "value"
+            }
 
 ### Update an Existing Item [PUT]
 

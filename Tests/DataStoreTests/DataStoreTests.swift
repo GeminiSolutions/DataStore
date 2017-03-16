@@ -6,14 +6,13 @@ class DataStoreTests: XCTestCase {
         let jsonContent = DataStoreContentJSONDictionary<String,String>()
         jsonContent.set("value", for: "name")
         let result = jsonContent.toData()
-        XCTAssertEqual(result, nil)
+        XCTAssertNotNil(result)
     }
 
     func testJSONContentDecode() {
         let jsonContent = DataStoreContentJSONDictionary<String,String>()
         let data = "{\"name\":\"value\"}".data(using: .utf8)!
-        let result = jsonContent.fromData(data)
-        XCTAssertEqual(result, nil)
+        XCTAssertNil(jsonContent.fromData(data))
     }
 
     static var allTests : [(String, (DataStoreTests) -> () throws -> Void)] {

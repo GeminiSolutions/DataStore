@@ -7,63 +7,129 @@
 
 import Foundation
 
-public enum DataStoreServerError: Error {
-    case notImplemented
-    case badRequestMethod
-    case badRequestContent
-    case badResponseContent
-    case emptyRequestContent
-}
-
 public protocol DataStoreServerTransport: class {
-    typealias ProcessBlock = (_ path: String, _ request: URLRequest, _ response: HTTPURLResponse) -> Error?
+    typealias ProcessBlock = (_ request: URLRequest, _ response: HTTPURLResponse) -> Void
 
     var processBlock: ProcessBlock { get set }
 }
 
+public protocol DataStoreServerDelegate: class {
+    func getItems(_ query: [String:String]?, _ range: Range<Int>?) -> DataStoreContent?
+    func createItem(_ content: DataStoreContent) -> DataStoreContent?
+    func getItemsCount() -> DataStoreContent?
+    func getItemsIdentifiers() -> DataStoreContent?
+    func getItem(_ itemId: String) -> DataStoreContent?
+    func updateItem(_ itemId: String, _ content: DataStoreContent) -> DataStoreContent?
+    func deleteItem(_ itemId: String) -> DataStoreContent?
+    func getEmptyItem() -> DataStoreContent?
+}
+
 public class DataStoreServer {
-    public typealias ResponseBlock = (_ response: HTTPURLResponse ) -> Error?
-    public typealias ItemResponseBlock = (_ itemId: String, _ response: HTTPURLResponse) -> Error?
-
     private var transport: DataStoreServerTransport
+    private var delegate: DataStoreServerDelegate
 
-    public var getItemsBlock: ResponseBlock = { _ in return DataStoreServerError.notImplemented }
-    public var getItemsCountBlock: ResponseBlock = { _ in return DataStoreServerError.notImplemented }
-    public var getItemsIdentifiersBlock: ResponseBlock = { _ in return DataStoreServerError.notImplemented }
-    public var getItemBlock: ItemResponseBlock = { _,_ in return DataStoreServerError.notImplemented }
-    public var putItemBlock: ItemResponseBlock = { _,_ in return DataStoreServerError.notImplemented }
-    public var deleteItemBlock: ItemResponseBlock = { _,_ in return DataStoreServerError.notImplemented }
-
-    public init(transport: DataStoreServerTransport) {
+    public init(transport: DataStoreServerTransport, delegate: DataStoreServerDelegate) {
         self.transport = transport
+        self.delegate = delegate
         self.transport.processBlock = process
     }
 
-    func process(_ path: String, _ request: URLRequest, _ response: HTTPURLResponse) -> Error? {
-        guard let method = request.httpMethod else { return DataStoreServerError.badRequestMethod }
+    private func process(_ request: URLRequest, _ response: HTTPURLResponse) {
+        guard let url = request.url, let method = request.httpMethod else {
+            processBadRequest(response)
+            return
+        }
 
-        if path == "/items" {
-            guard ["GET", "POST"].contains(method) else { return DataStoreServerError.notImplemented }
-            return getItemsBlock(response)
-        }
-        else if path == "/items/count" {
-            guard ["GET"].contains(method) else { return DataStoreServerError.notImplemented }
-            return getItemsCountBlock(response)
-        }
-        else if path == "/items/identifiers" {
-            guard ["GET"].contains(method) else { return DataStoreServerError.notImplemented }
-            return getItemsIdentifiersBlock(response)
-        }
-        else if path.hasPrefix("/items/") {
-            let itemId = path.substring(from: path.index(path.startIndex, offsetBy: 7))
+        if url.path == "/items" {
             switch method {
-            case "GET":     return getItemBlock(itemId, response)
-            case "PUT":     return putItemBlock(itemId, response)
-            case "DELETE":  return deleteItemBlock(itemId, response)
+            case "GET":     let query = queryFrom(url.query ?? "")
+                            let range = rangeFrom(request.allHTTPHeaderFields?["Range"] ?? "")
+                            processGet(response, delegate.getItems(query, range))
+            case "POST":    if let requestContent = dataStoreContent(from: request) {
+                                processPost(response, delegate.createItem(requestContent))
+                            }
+                            else {
+                                processBadRequestContent(response)
+                            }
             default:        break
             }
         }
+        else if url.path == "/items/count" {
+            switch method {
+            case "GET":     processGet(response, delegate.getItemsCount())
+            default:        break
+            }
+        }
+        else if url.path == "/items/identifiers" {
+            switch method {
+            case "GET":     processGet(response, delegate.getItemsIdentifiers())
+            default:        break
+            }
+        }
+        else if url.path.hasPrefix("/items/") {
+            let itemId = url.path.substring(from: url.path.index(url.path.startIndex, offsetBy: 7))
+            switch method {
+            case "GET":     processGet(response, delegate.getItem(itemId))
+            case "PUT":     if let requestContent = dataStoreContent(from: request) {
+                                processPut(response, delegate.updateItem(itemId, requestContent))
+                            }
+                            else {
+                                processBadRequestContent(response)
+                            }
+            case "DELETE":  processDelete(response, delegate.deleteItem(itemId))
+            default:        break
+            }
+        }
+    }
 
-        return DataStoreServerError.notImplemented
+    private func queryFrom(_ string: String) -> [String:String]? {
+        var query = [String:String]()
+        string.components(separatedBy: "&").forEach({ (queryItem) in
+            let queryItemComponents = queryItem.components(separatedBy: "=")
+            if queryItemComponents.count == 2 {
+                query[queryItemComponents.first!] = queryItemComponents.last!
+            }
+        })
+        return query.isEmpty ? nil : query
+    }
+
+    private func rangeFrom(_ string: String) -> Range<Int>? {
+        guard string.hasPrefix("items=") else { return nil }
+        let bounds = string.substring(from: string.index(string.startIndex, offsetBy: 6)).components(separatedBy: "-")
+        guard bounds.count == 2 else { return nil }
+        guard let lowerBound = Int(bounds.first!), let upperBound = Int(bounds.last!) else { return nil }
+        guard lowerBound <= upperBound else { return nil }
+        return Range<Int>(uncheckedBounds: (lower: lowerBound, upper: upperBound))
+    }
+
+    private func dataStoreContent(from request: URLRequest) -> DataStoreContent? {
+        guard let requestContent = delegate.getEmptyItem() else { return nil }
+        guard let data = request.httpBody else { return nil }
+        guard requestContent.fromData(data) == nil else { return nil }
+        return requestContent
+    }
+
+    private func processBadRequest(_ response: HTTPURLResponse) {
+        //TODO
+    }
+
+    private func processBadRequestContent(_ response: HTTPURLResponse) {
+        //TODO
+    }
+
+    private func processGet(_ reponse: HTTPURLResponse, _ responseContent: DataStoreContent?) {
+        //TODO
+    }
+
+    private func processPost(_ reponse: HTTPURLResponse, _ responseContent: DataStoreContent?) {
+        //TODO
+    }
+
+    private func processPut(_ reponse: HTTPURLResponse, _ responseContent: DataStoreContent?) {
+        //TODO
+    }
+
+    private func processDelete(_ reponse: HTTPURLResponse, _ responseContent: DataStoreContent?) {
+        //TODO
     }
 }

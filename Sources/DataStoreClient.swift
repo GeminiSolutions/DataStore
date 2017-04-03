@@ -27,10 +27,11 @@ public class DataStoreClient {
 
     private var transport: DataStoreClientTransport
 
-    private func queryString(from dict: [String:Any]?) -> String {
+    private func queryString(from dict: [String:String]?) -> String {
         guard dict != nil else { return "" }
-        let str = dict!.flatMap({ return "\($0)=\($1)" }).reduce("", { return ($0.isEmpty ? "" : $0+"&") + $1 })
-        return str.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let queryItems = dict!.flatMap({ return $0+"="+$1 })
+        let queryString = queryItems.reduce("", { return ($0.isEmpty ? "" : $0+"&") + $1 })
+        return queryString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
     }
 
     public init(transport: DataStoreClientTransport) {
@@ -38,7 +39,7 @@ public class DataStoreClient {
     }
 
     //GET /items
-    public func getItems(_ query: [String:Any]?, _ range: Range<Int>?, _ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
+    public func getItems(_ query: [String:String]?, _ range: Range<Int>?, _ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
         let queryString = self.queryString(from: query)
         transport.execute("/items"+(queryString.isEmpty ? "" : "?" + queryString), { (request) in
             request.httpMethod = "GET"

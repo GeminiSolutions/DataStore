@@ -87,8 +87,24 @@ public class DataStoreClient {
     }
 
     //GET /items/identifiers
-    public func getItemsIdentifiers(_ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
+    public func getItemsIdentifiers( _ range: Range<Int>?, _ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
         transport.execute("/items/identifiers", { (request) in
+            request.httpMethod = "GET"
+            if range != nil {
+                request.addValue("items=\(range!.lowerBound)-\(range!.upperBound)", forHTTPHeaderField: "Range")
+            }
+            return nil
+        }, { (response, responseData) in
+            guard responseData != nil else { return DataStoreClientError.emptyResponseContent }
+            return responseContent.fromData(responseData!)
+        }, { (error) in
+            completion(error)
+        })
+    }
+
+    //GET /items/tags
+    public func getItemsTags(_ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
+        transport.execute("/items/tags", { (request) in
             request.httpMethod = "GET"
             return nil
         }, { (response, responseData) in

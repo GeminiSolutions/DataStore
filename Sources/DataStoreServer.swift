@@ -17,7 +17,8 @@ public protocol DataStoreServerDelegate: class {
     func getItems(_ query: [String:String]?, _ range: Range<Int>?) -> DataStoreContent?
     func createItem(_ content: DataStoreContent) -> DataStoreContent?
     func getItemsCount() -> DataStoreContent?
-    func getItemsIdentifiers() -> DataStoreContent?
+    func getItemsIdentifiers( _ range: Range<Int>?) -> DataStoreContent?
+    func getItemsTags() -> DataStoreContent?
     func getItem(_ itemId: String) -> DataStoreContent?
     func updateItem(_ itemId: String, _ content: DataStoreContent) -> DataStoreContent?
     func deleteItem(_ itemId: String) -> DataStoreContent?
@@ -62,7 +63,14 @@ public class DataStoreServer {
         }
         else if url.path == "/items/identifiers" {
             switch method {
-            case "GET":     processGet(response, delegate.getItemsIdentifiers())
+            case "GET":     let range = rangeFrom(request.allHTTPHeaderFields?["Range"] ?? "")
+                            processGet(response, delegate.getItemsIdentifiers(range))
+            default:        break
+            }
+        }
+        else if url.path == "/items/tags" {
+            switch method {
+            case "GET":     processGet(response, delegate.getItemsTags())
             default:        break
             }
         }

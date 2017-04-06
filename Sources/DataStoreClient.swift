@@ -73,6 +73,19 @@ public class DataStoreClient {
         })
     }
 
+    //GET /items/metadata
+    public func getItemsMetadata(_ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
+        transport.execute("/items/metadata", { (request) in
+            request.httpMethod = "GET"
+            return nil
+        }, { (response, responseData) in
+            guard responseData != nil else { return DataStoreClientError.emptyResponseContent }
+            return responseContent.fromData(responseData!)
+        }, { (error) in
+            completion(error)
+        })
+    }
+
     //GET /items/count
     public func getItemsCount(_ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
         transport.execute("/items/count", { (request) in
@@ -93,19 +106,6 @@ public class DataStoreClient {
             if range != nil {
                 request.addValue("items=\(range!.lowerBound)-\(range!.upperBound)", forHTTPHeaderField: "Range")
             }
-            return nil
-        }, { (response, responseData) in
-            guard responseData != nil else { return DataStoreClientError.emptyResponseContent }
-            return responseContent.fromData(responseData!)
-        }, { (error) in
-            completion(error)
-        })
-    }
-
-    //GET /items/tags
-    public func getItemsTags(_ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
-        transport.execute("/items/tags", { (request) in
-            request.httpMethod = "GET"
             return nil
         }, { (response, responseData) in
             guard responseData != nil else { return DataStoreClientError.emptyResponseContent }

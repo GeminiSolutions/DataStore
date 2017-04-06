@@ -49,6 +49,18 @@ This allows creating a new item.
                 "key": "value"
             }
 
+## Items Metadata [/items/metadata]
+
+### Read items metadata [GET]
+
+This retrieves the metadata associated with the collection
+
++ Response 200 (application/json)
+
+        {
+            "tags" : [ "value" ]
+        }
+
 ## Items Count [/items/count]
 
 ### Read items count [GET]
@@ -78,20 +90,6 @@ This generates a list of identifiers for all available items.
         [
             100
         ]
-
-
-## Item Tags Collection [/items/tags]
-
-### List All Items [GET]
-
-This generates a list of unique tags for all available items.
-
-+ Response 200 (application/json)
-
-        [
-            "tag"
-        ]
-
 
 ## Item [/items/{item_id}]
 

@@ -26,6 +26,7 @@ public class DataStoreClient {
     public typealias MetadataCompletionBlock = (_ metadata: [AnyHashable:Any], _ error: Error?) -> Void
 
     private var transport: DataStoreClientTransport
+    private var basePath: String
 
     private func queryString(from dict: [String:String]?) -> String {
         guard dict != nil else { return "" }
@@ -34,14 +35,15 @@ public class DataStoreClient {
         return queryString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
     }
 
-    public init(transport: DataStoreClientTransport) {
+    public init(transport: DataStoreClientTransport, basePath: String) {
         self.transport = transport
+        self.basePath = basePath
     }
 
     //GET /items
     public func getItems(_ query: [String:String]?, _ range: Range<Int>?, _ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
         let queryString = self.queryString(from: query)
-        transport.execute("/items"+(queryString.isEmpty ? "" : "?" + queryString), { (request) in
+        transport.execute(basePath+(queryString.isEmpty ? "" : "?" + queryString), { (request) in
             request.httpMethod = "GET"
             if range != nil {
                 request.addValue("items=\(range!.lowerBound)-\(range!.upperBound)", forHTTPHeaderField: "Range")
@@ -58,7 +60,7 @@ public class DataStoreClient {
     //POST /items
     public func createItem(_ requestContent: DataStoreContent, _ responseContent: DataStoreContent, _ completion: @escaping MetadataCompletionBlock) {
         var metadata: [String:Any] = [:]
-        transport.execute("/items", { (request) in
+        transport.execute(basePath, { (request) in
             request.httpMethod = "POST"
             request.httpBody = requestContent.toData()
             return request.httpBody == nil ? DataStoreClientError.badRequestContent : nil
@@ -75,7 +77,7 @@ public class DataStoreClient {
 
     //GET /items/metadata
     public func getItemsMetadata(_ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
-        transport.execute("/items/metadata", { (request) in
+        transport.execute(basePath+"/metadata", { (request) in
             request.httpMethod = "GET"
             return nil
         }, { (response, responseData) in
@@ -88,7 +90,7 @@ public class DataStoreClient {
 
     //GET /items/count
     public func getItemsCount(_ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
-        transport.execute("/items/count", { (request) in
+        transport.execute(basePath+"/count", { (request) in
             request.httpMethod = "GET"
             return nil
         }, { (response, responseData) in
@@ -101,7 +103,7 @@ public class DataStoreClient {
 
     //GET /items/identifiers
     public func getItemsIdentifiers( _ range: Range<Int>?, _ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
-        transport.execute("/items/identifiers", { (request) in
+        transport.execute(basePath+"/identifiers", { (request) in
             request.httpMethod = "GET"
             if range != nil {
                 request.addValue("items=\(range!.lowerBound)-\(range!.upperBound)", forHTTPHeaderField: "Range")
@@ -118,7 +120,7 @@ public class DataStoreClient {
     //GET /items/item_id
     public func getItem(id: String, _ responseContent: DataStoreContent, _ completion: @escaping MetadataCompletionBlock) {
         var metadata: [String:Any] = [:]
-        transport.execute("/items/"+id, { (request) in
+        transport.execute(basePath+"/"+id, { (request) in
             request.httpMethod = "GET"
             return nil
         }, { (response, responseData) in
@@ -134,7 +136,7 @@ public class DataStoreClient {
 
     //PUT /items/item_id
     public func updateItem(id: String, _ requestContent: DataStoreContent, _ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
-        transport.execute("/items/"+id, { (request) in
+        transport.execute(basePath+"/"+id, { (request) in
             request.httpMethod = "PUT"
             request.httpBody = requestContent.toData()
             return request.httpBody == nil ? DataStoreClientError.badRequestContent : nil
@@ -148,7 +150,7 @@ public class DataStoreClient {
 
     //DELETE /items/item_id
     public func removeItem(id: String, _ completion: @escaping CompletionBlock) {
-        transport.execute("/items/"+id, { (request) in
+        transport.execute(basePath+"/"+id, { (request) in
             request.httpMethod = "DELETE"
             return nil
         }, { (response, responseData) in

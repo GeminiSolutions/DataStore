@@ -27,12 +27,18 @@ public class DataStoreClient {
 
     private var transport: DataStoreClientTransport
     private var basePath: String
+    public var authToken: String?
 
-    private func queryString(from dict: [String:String]?) -> String {
-        guard dict != nil else { return "" }
+    private func queryString(from dict: [String:String]?) -> String? {
+        guard dict != nil else { return nil }
         let queryItems = dict!.flatMap({ return $0+"="+$1 })
         let queryString = queryItems.reduce("", { return ($0.isEmpty ? "" : $0+"&") + $1 })
-        return queryString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        return queryString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+    }
+
+    private func rangeString(from range: Range<Int>?) -> String? {
+        guard range != nil else { return nil }
+        return "\(range!.lowerBound)-\(range!.upperBound)"
     }
 
     public init(transport: DataStoreClientTransport, basePath: String) {
@@ -42,12 +48,10 @@ public class DataStoreClient {
 
     //GET /items
     public func getItems(_ query: [String:String]?, _ range: Range<Int>?, _ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
-        let queryString = self.queryString(from: query)
-        transport.execute(basePath+(queryString.isEmpty ? "" : "?" + queryString), { (request) in
+        transport.execute(basePath+"?"+(queryString(from: query) ?? ""), { (request) in
             request.httpMethod = "GET"
-            if range != nil {
-                request.addValue("items=\(range!.lowerBound)-\(range!.upperBound)", forHTTPHeaderField: "Range")
-            }
+            request.setValue(authToken, forHTTPHeaderField: "Authorization")
+            request.setValue(rangeString(from: range), forHTTPHeaderField: "Range")
             return nil
         }, { (response, responseData) in
             guard responseData != nil else { return DataStoreClientError.emptyResponseContent }
@@ -62,6 +66,7 @@ public class DataStoreClient {
         var metadata: [String:Any] = [:]
         transport.execute(basePath, { (request) in
             request.httpMethod = "POST"
+            request.setValue(authToken, forHTTPHeaderField: "Authorization")
             request.httpBody = requestContent.toData()
             return request.httpBody == nil ? DataStoreClientError.badRequestContent : nil
         }, { (response, responseData) in
@@ -79,6 +84,7 @@ public class DataStoreClient {
     public func getItemsMetadata(_ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
         transport.execute(basePath+"/metadata", { (request) in
             request.httpMethod = "GET"
+            request.setValue(authToken, forHTTPHeaderField: "Authorization")
             return nil
         }, { (response, responseData) in
             guard responseData != nil else { return DataStoreClientError.emptyResponseContent }
@@ -92,6 +98,7 @@ public class DataStoreClient {
     public func getItemsCount(_ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
         transport.execute(basePath+"/count", { (request) in
             request.httpMethod = "GET"
+            request.setValue(authToken, forHTTPHeaderField: "Authorization")
             return nil
         }, { (response, responseData) in
             guard responseData != nil else { return DataStoreClientError.emptyResponseContent }
@@ -105,9 +112,8 @@ public class DataStoreClient {
     public func getItemsIdentifiers( _ range: Range<Int>?, _ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
         transport.execute(basePath+"/identifiers", { (request) in
             request.httpMethod = "GET"
-            if range != nil {
-                request.addValue("items=\(range!.lowerBound)-\(range!.upperBound)", forHTTPHeaderField: "Range")
-            }
+            request.setValue(authToken, forHTTPHeaderField: "Authorization")
+            request.setValue(rangeString(from: range), forHTTPHeaderField: "Range")
             return nil
         }, { (response, responseData) in
             guard responseData != nil else { return DataStoreClientError.emptyResponseContent }
@@ -122,6 +128,7 @@ public class DataStoreClient {
         var metadata: [String:Any] = [:]
         transport.execute(basePath+"/"+id, { (request) in
             request.httpMethod = "GET"
+            request.setValue(authToken, forHTTPHeaderField: "Authorization")
             return nil
         }, { (response, responseData) in
             guard responseData != nil else { return DataStoreClientError.emptyResponseContent }
@@ -138,6 +145,7 @@ public class DataStoreClient {
     public func updateItem(id: String, _ requestContent: DataStoreContent, _ responseContent: DataStoreContent, _ completion: @escaping CompletionBlock) {
         transport.execute(basePath+"/"+id, { (request) in
             request.httpMethod = "PUT"
+            request.setValue(authToken, forHTTPHeaderField: "Authorization")
             request.httpBody = requestContent.toData()
             return request.httpBody == nil ? DataStoreClientError.badRequestContent : nil
         }, { (response, responseData) in
@@ -152,6 +160,7 @@ public class DataStoreClient {
     public func removeItem(id: String, _ completion: @escaping CompletionBlock) {
         transport.execute(basePath+"/"+id, { (request) in
             request.httpMethod = "DELETE"
+            request.setValue(authToken, forHTTPHeaderField: "Authorization")
             return nil
         }, { (response, responseData) in
             return nil

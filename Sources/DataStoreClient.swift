@@ -25,9 +25,10 @@ public class DataStoreClient {
     public typealias CompletionBlock = (_ error: Error?) -> Void
     public typealias MetadataCompletionBlock = (_ metadata: [AnyHashable:Any], _ error: Error?) -> Void
 
+    public var authToken: String?
+
     private var transport: DataStoreClientTransport
     private var basePath: String
-    public var authToken: String?
 
     private func queryString(from dict: [String:String]?) -> String? {
         guard dict != nil else { return nil }

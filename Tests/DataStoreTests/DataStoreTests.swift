@@ -15,10 +15,8 @@ class DataStoreTests: XCTestCase {
         XCTAssertNil(jsonContent.fromData(data))
     }
 
-    static var allTests : [(String, (DataStoreTests) -> () throws -> Void)] {
-        return [
-            ("testJSONContentEncode", testJSONContentEncode),
-            ("testJSONContentDecode", testJSONContentDecode)
-        ]
-    }
+    static var allTests = [
+        ("testJSONContentEncode", testJSONContentEncode),
+        ("testJSONContentDecode", testJSONContentDecode)
+    ]
 }

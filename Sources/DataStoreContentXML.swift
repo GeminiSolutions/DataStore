@@ -7,8 +7,20 @@
 
 import Foundation
 
-protocol DataStoreContentXML: DataStoreContent {
-    var xml: XMLDocument { get set }
+open class DataStoreContentXML: DataStoreContent {
+    var xml: XMLDocument
+
+    public var content: XMLDocument {
+        return xml
+    }
+
+    public init() {
+        xml = XMLDocument()
+    }
+
+    public init(xml: XMLDocument) {
+        self.xml = xml
+    }
 }
 
 extension DataStoreContentXML {

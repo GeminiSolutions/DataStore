@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class DataStoreItemIdsList<ItemIdType>: DataStoreContentJSONArray<ItemIdType> {
+public class DataStoreItemIdsListJSON<ItemIdType>: DataStoreContentJSONArray<ItemIdType> {
     public var itemIds: [ItemIdType] {
         return content
     }

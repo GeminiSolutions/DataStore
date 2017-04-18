@@ -32,8 +32,8 @@ public class DataStoreClient {
 
     private func queryString(from dict: [String:String]?) -> String? {
         guard dict != nil else { return nil }
-        let queryItems = dict!.flatMap({ return $0+"="+$1 })
-        let queryString = queryItems.reduce("", { return ($0.isEmpty ? "" : $0+"&") + $1 })
+        let queryItems = dict!.flatMap({ $0+"="+$1 })
+        let queryString = queryItems.reduce("", { ($0.isEmpty ? "" : $0+"&") + $1 })
         return queryString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
     }
 

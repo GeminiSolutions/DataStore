@@ -31,7 +31,12 @@ public class DataStoreClientTransportURLSession : DataStoreClientTransport {
         }
 
         session.dataTask(with: request, completionHandler: { (data, response, error) in
-            completion(error == nil ? responseBlock(response as? HTTPURLResponse ?? HTTPURLResponse(), data) : error)
+            if let httpResponse = response as? HTTPURLResponse {
+                completion(error == nil ? responseBlock(httpResponse, data) : error)
+            }
+            else {
+                completion(DataStoreClientError.badResponse)
+            }
         }).resume()
     }
 
@@ -44,7 +49,12 @@ public class DataStoreClientTransportURLSession : DataStoreClientTransport {
         }
 
         session.downloadTask(with: request, completionHandler: { (url, response, error) in
-            completion(error == nil ? responseBlock(response as? HTTPURLResponse ?? HTTPURLResponse(), url) : error)
+            if let httpResponse = response as? HTTPURLResponse {
+                completion(error == nil ? responseBlock(httpResponse, url) : error)
+            }
+            else {
+                completion(DataStoreClientError.badResponse)
+            }
         }).resume()
     }
 
@@ -58,7 +68,12 @@ public class DataStoreClientTransportURLSession : DataStoreClientTransport {
 
         request.httpBody = requestContent
         session.dataTask(with: request, completionHandler: { (data, response, error) in
-            completion(error == nil ? responseBlock(response as? HTTPURLResponse ?? HTTPURLResponse(), data) : error)
+            if let httpResponse = response as? HTTPURLResponse {
+                completion(error == nil ? responseBlock(httpResponse, data) : error)
+            }
+            else {
+                completion(DataStoreClientError.badResponse)
+            }
         }).resume()
     }
 
@@ -71,7 +86,12 @@ public class DataStoreClientTransportURLSession : DataStoreClientTransport {
         }
 
         session.uploadTask(with: request, fromFile: requestContent, completionHandler: { (data, response, error) in
-            completion(error == nil ? responseBlock(response as? HTTPURLResponse ?? HTTPURLResponse(), data) : error)
+            if let httpResponse = response as? HTTPURLResponse {
+                completion(error == nil ? responseBlock(httpResponse, data) : error)
+            }
+            else {
+                completion(DataStoreClientError.badResponse)
+            }
         }).resume()
     }
 }

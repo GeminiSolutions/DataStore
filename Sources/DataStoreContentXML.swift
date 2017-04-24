@@ -24,6 +24,10 @@ open class DataStoreContentXML: DataStoreContent {
 }
 
 extension DataStoreContentXML {
+    public var largeSize: Bool {
+        return false
+    }
+
     public func fromData(_ data: Data) -> Error? {
         do {
         #if os(Linux)
@@ -44,5 +48,33 @@ extension DataStoreContentXML {
     #else
         return xml.xmlData(withOptions: Int(XMLNode.Options.documentIncludeContentTypeDeclaration.rawValue))
     #endif
+    }
+
+    public func fromURL(_ url: URL) -> Error? {
+        do {
+        #if os(Linux)
+            xml = try XMLDocument(contentsOf: url, options: XMLNode.Options.documentValidate)
+        #else
+            xml = try XMLDocument(contentsOf: url, options: Int(XMLNode.Options.documentValidate.rawValue))
+        #endif
+            return nil
+        }
+        catch let error {
+            return error
+        }
+    }
+    
+    public func toURL(_ url: URL) -> Error? {
+        do {
+            #if os(Linux)
+                try xml.xmlData(withOptions: XMLNode.Options.documentIncludeContentTypeDeclaration).write(to: url)
+            #else
+                try xml.xmlData(withOptions: Int(XMLNode.Options.documentIncludeContentTypeDeclaration.rawValue)).write(to: url)
+            #endif
+            return nil
+        }
+        catch let error {
+            return error
+        }
     }
 }

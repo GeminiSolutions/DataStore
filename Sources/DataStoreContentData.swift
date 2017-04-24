@@ -24,12 +24,36 @@ open class DataStoreContentData: DataStoreContent {
 }
 
 extension DataStoreContentData {
+    public var largeSize: Bool {
+        return false
+    }
+
     public func fromData(_ data: Data) -> Error? {
         self.data = data
         return nil
     }
 
     public func toData() -> Data? {
-        return data
+        return self.data
+    }
+
+    public func fromURL(_ url: URL) -> Error? {
+        do {
+            try self.data = Data(contentsOf: url)
+            return nil
+        }
+        catch let error {
+            return error
+        }
+    }
+
+    public func toURL(_ url: URL) -> Error? {
+        do {
+            try data.write(to: url)
+            return nil
+        }
+        catch let error {
+            return error
+        }
     }
 }

@@ -20,10 +20,6 @@ open class DataStoreContentFile: DataStoreContent {
 }
 
 extension DataStoreContentFile {
-    public var largeSize: Bool {
-        return true
-    }
-    
     public func fromData(_ data: Data) -> Error? {
         do {
             try data.write(to: fileURL)

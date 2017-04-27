@@ -24,10 +24,6 @@ open class DataStoreContentXML: DataStoreContent {
 }
 
 extension DataStoreContentXML {
-    public var largeSize: Bool {
-        return false
-    }
-
     public func fromData(_ data: Data) -> Error? {
         do {
         #if os(Linux)

@@ -24,10 +24,6 @@ open class DataStoreContentData: DataStoreContent {
 }
 
 extension DataStoreContentData {
-    public var largeSize: Bool {
-        return false
-    }
-
     public func fromData(_ data: Data) -> Error? {
         self.data = data
         return nil

@@ -17,10 +17,6 @@ protocol DataStoreContentJSON: DataStoreContent {
 }
 
 extension DataStoreContentJSON {
-    public var largeSize: Bool {
-        return false
-    }
-
     public func fromData(_ data: Data) -> Error? {
         do {
             guard let jsonObject = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? jsonObjectType else { return DataStoreContentJSONError.jsonObjectTypeNotValid }

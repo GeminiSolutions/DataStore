@@ -14,8 +14,13 @@ public enum DataStoreContentFileError: Error {
 open class DataStoreContentFile: DataStoreContent {
     var fileURL: URL
     
-    public init(fileURL: URL) {
+    public init?(fileURL: URL) {
+        guard fileURL.isFileURL else { return nil }
         self.fileURL = fileURL
+    }
+
+    public var content: URL {
+        return self.fileURL
     }
 }
 

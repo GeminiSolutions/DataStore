@@ -13,3 +13,13 @@ public protocol DataStoreContent: class {
     func fromURL(_ url: URL) -> Error?
     func toURL(_ url: URL) -> Error?
 }
+
+extension DataStoreContent {
+    public static func dateString(from date: Date) -> String {
+        return DataStore.dateString(from: date)
+    }
+
+    public static func date(from string: String) -> Date? {
+        return DataStore.date(from: string)
+    }
+}

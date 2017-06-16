@@ -7,6 +7,7 @@
 
 import Foundation
 
+#if os(Linux) || os(macOS)
 open class DataStoreContentXML: DataStoreContent {
     var xml: XMLDocument
 
@@ -74,3 +75,4 @@ extension DataStoreContentXML {
         }
     }
 }
+#endif

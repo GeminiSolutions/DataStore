@@ -10,6 +10,14 @@ import Foundation
 class DataStore {
     private static let dateFormatter = HTTPDateFormatter()
 
+    class func randomUInt32() -> UInt32 {
+#if os(Linux)
+        return UInt32(random() % (Int(UInt32.max)+1))
+#else
+        return arc4random_uniform(UInt32.max)
+#endif
+    }
+
     class func queryString(from dict: [String:String]?) -> String? {
         guard dict != nil else { return nil }
         let queryItems = dict!.flatMap({ $0+"="+$1 })

@@ -16,7 +16,7 @@ public protocol DataStoreContent: class {
 
 extension DataStoreContent {
     public static func dateString(from date: Date) -> String {
-        return DataStore.dateString(from: date)
+        return DataStore.string(from: date)
     }
 
     public static func date(from string: String) -> Date? {

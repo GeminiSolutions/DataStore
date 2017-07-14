@@ -7,8 +7,10 @@
 
 import Foundation
 
-class DataStore {
+public class DataStore {
     private static let dateFormatter = HTTPDateFormatter()
+
+    public static let HTTPCustomHeader1 = "X-DataStoreCustomHeader1"
 
     class func randomUInt32() -> UInt32 {
 #if os(Linux)
@@ -21,14 +23,15 @@ class DataStore {
     class func queryString(from dict: [String:String]?) -> String? {
         guard dict != nil else { return nil }
         let queryItems = dict!.flatMap({ $0+"="+$1 })
-        let queryString = queryItems.reduce("", { ($0.isEmpty ? "" : $0+"&") + $1 })
+        let queryString = DataStore.string(from: queryItems, separator: "&")
         return queryString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
     }
 
     class func query(from string: String) -> [String:String]? {
         var query = [String:String]()
-        string.components(separatedBy: "&").forEach({ (queryItem) in
-            let queryItemComponents = queryItem.components(separatedBy: "=")
+        let queryItems = DataStore.array(from: string, separator: "&")
+        queryItems.forEach({ (queryItem) in
+            let queryItemComponents = DataStore.array(from: queryItem, separator: "=")
             if queryItemComponents.count == 2 {
                 query[queryItemComponents.first!] = queryItemComponents.last!
             }
@@ -43,19 +46,27 @@ class DataStore {
 
     class func range(from string: String) -> Range<Int>? {
         guard string.hasPrefix("items=") else { return nil }
-        let bounds = string.substring(from: string.index(string.startIndex, offsetBy: 6)).components(separatedBy: "-")
+        let bounds = DataStore.array(from: string.substring(from: string.index(string.startIndex, offsetBy: 6)), separator: "-")
         guard bounds.count == 2 else { return nil }
         guard let lowerBound = Int(bounds.first!), let upperBound = Int(bounds.last!) else { return nil }
         guard lowerBound <= upperBound else { return nil }
         return Range<Int>(uncheckedBounds: (lower: lowerBound, upper: upperBound))
     }
 
-    class func dateString(from date: Date) -> String {
+    class func string(from date: Date) -> String {
         return dateFormatter.string(from: date)
     }
 
     class func date(from string: String) -> Date? {
         return dateFormatter.date(from: string)
+    }
+
+    public class func string(from array: [String], separator: String) -> String {
+        return array.reduce("", { ($0.isEmpty ? "" : $0+separator) + $1 })
+    }
+
+    public class func array(from string: String, separator: String) -> [String] {
+        return string.components(separatedBy: separator)
     }
 }
 

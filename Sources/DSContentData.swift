@@ -1,5 +1,5 @@
 //
-//  DataStoreContentData.swift
+//  DSContentData.swift
 //  DataStore
 //
 //  Copyright © 2017 Gemini Solutions. All rights reserved.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-open class DataStoreContentData: DataStoreContent {
+open class DSContentData: DSContent {
     var data: Data
 
     public var content: Data {
@@ -23,7 +23,7 @@ open class DataStoreContentData: DataStoreContent {
     }
 }
 
-extension DataStoreContentData {
+extension DSContentData {
     public func fromData(_ data: Data) -> Error? {
         self.data = data
         return nil

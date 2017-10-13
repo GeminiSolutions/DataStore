@@ -1,5 +1,5 @@
 //
-//  DataStoreContentJSON.swift
+//  DSContentJSON.swift
 //  DataStore
 //
 //  Copyright © 2017 Gemini Solutions. All rights reserved.
@@ -7,19 +7,19 @@
 
 import Foundation
 
-public enum DataStoreContentJSONError: Error {
+public enum DSContentJSONError: Error {
     case jsonObjectTypeNotValid
 }
 
-protocol DataStoreContentJSON: DataStoreContent {
+protocol DSContentJSON: DSContent {
     associatedtype jsonObjectType
     var json: jsonObjectType { get set }
 }
 
-extension DataStoreContentJSON {
+extension DSContentJSON {
     public func fromData(_ data: Data) -> Error? {
         do {
-            guard let jsonObject = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? jsonObjectType else { return DataStoreContentJSONError.jsonObjectTypeNotValid }
+            guard let jsonObject = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? jsonObjectType else { return DSContentJSONError.jsonObjectTypeNotValid }
             json = jsonObject
             return nil
         }

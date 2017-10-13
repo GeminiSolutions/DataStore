@@ -1,5 +1,5 @@
 //
-//  DataStoreContentFile.swift
+//  DSContentFile.swift
 //  DataStore
 //
 //  Copyright © 2017 Gemini Solutions. All rights reserved.
@@ -7,24 +7,24 @@
 
 import Foundation
 
-public enum DataStoreContentFileError: Error {
+public enum DSContentFileError: Error {
     case invalidFileURL
 }
 
-open class DataStoreContentFile: DataStoreContent {
+open class DSContentFile: DSContent {
     var fileURL: URL
-    
-    public init?(fileURL: URL) {
-        guard fileURL.isFileURL else { return nil }
-        self.fileURL = fileURL
-    }
 
     public var content: URL {
         return self.fileURL
     }
+
+    public init?(fileURL: URL) {
+        guard fileURL.isFileURL else { return nil }
+        self.fileURL = fileURL
+    }
 }
 
-extension DataStoreContentFile {
+extension DSContentFile {
     public func fromData(_ data: Data) -> Error? {
         do {
             try data.write(to: fileURL)
@@ -45,7 +45,7 @@ extension DataStoreContentFile {
     }
     
     public func fromURL(_ url: URL) -> Error? {
-        guard url.isFileURL else { return DataStoreContentFileError.invalidFileURL }
+        guard url.isFileURL else { return DSContentFileError.invalidFileURL }
         do {
             try FileManager.default.copyItem(at: url, to: fileURL)
             return nil
@@ -56,7 +56,7 @@ extension DataStoreContentFile {
     }
     
     public func toURL(_ url: URL) -> Error? {
-        guard url.isFileURL else { return DataStoreContentFileError.invalidFileURL }
+        guard url.isFileURL else { return DSContentFileError.invalidFileURL }
         do {
             try FileManager.default.copyItem(at: fileURL, to: url)
             return nil

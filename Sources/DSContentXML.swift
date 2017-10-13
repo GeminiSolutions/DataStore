@@ -1,5 +1,5 @@
 //
-//  DataStoreContentXML.swift
+//  DSContentXML.swift
 //  DataStore
 //
 //  Copyright © 2017 Gemini Solutions. All rights reserved.
@@ -8,7 +8,7 @@
 import Foundation
 
 #if os(Linux) || os(macOS)
-open class DataStoreContentXML: DataStoreContent {
+open class DSContentXML: DSContent {
     var xml: XMLDocument
 
     public var content: XMLDocument {
@@ -24,14 +24,10 @@ open class DataStoreContentXML: DataStoreContent {
     }
 }
 
-extension DataStoreContentXML {
+extension DSContentXML {
     public func fromData(_ data: Data) -> Error? {
         do {
-        #if os(Linux)
             xml = try XMLDocument(data: data, options: XMLNode.Options.documentValidate)
-        #else
-            xml = try XMLDocument(data: data, options: Int(XMLNode.Options.documentValidate.rawValue))
-        #endif
             return nil
         }
         catch let error {
@@ -40,34 +36,22 @@ extension DataStoreContentXML {
     }
 
     public func toData() -> Data? {
-    #if os(Linux)
-        return xml.xmlData(withOptions: XMLNode.Options.documentIncludeContentTypeDeclaration)
-    #else
-        return xml.xmlData(withOptions: Int(XMLNode.Options.documentIncludeContentTypeDeclaration.rawValue))
-    #endif
+        return xml.xmlData(options: XMLNode.Options.documentIncludeContentTypeDeclaration)
     }
 
     public func fromURL(_ url: URL) -> Error? {
         do {
-        #if os(Linux)
             xml = try XMLDocument(contentsOf: url, options: XMLNode.Options.documentValidate)
-        #else
-            xml = try XMLDocument(contentsOf: url, options: Int(XMLNode.Options.documentValidate.rawValue))
-        #endif
             return nil
         }
         catch let error {
             return error
         }
     }
-    
+
     public func toURL(_ url: URL) -> Error? {
         do {
-            #if os(Linux)
-                try xml.xmlData(withOptions: XMLNode.Options.documentIncludeContentTypeDeclaration).write(to: url)
-            #else
-                try xml.xmlData(withOptions: Int(XMLNode.Options.documentIncludeContentTypeDeclaration.rawValue)).write(to: url)
-            #endif
+            try xml.xmlData(options: XMLNode.Options.documentIncludeContentTypeDeclaration).write(to: url)
             return nil
         }
         catch let error {

@@ -1,5 +1,5 @@
 //
-//  DataStoreItemsCountJSON.swift
+//  DSItemsCountJSON.swift
 //  DataStore
 //
 //  Copyright © 2017 Gemini Solutions. All rights reserved.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class DataStoreItemsCountJSON: DataStoreContentJSONDictionary<String,UInt64> {
+public class DSItemsCountJSON: DSContentJSONDictionary<String,UInt64> {
     public var value: UInt64 {
         get {
             return content["count"] ?? 0

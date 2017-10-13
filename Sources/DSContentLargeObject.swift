@@ -1,5 +1,5 @@
 //
-//  DataStoreContentLargeObject.swift
+//  DSContentLargeObject.swift
 //  DataStore
 //
 //  Copyright © 2017 Gemini Solutions. All rights reserved.
@@ -7,17 +7,17 @@
 
 import Foundation
 
-open class DataStoreContentLargeObject: DataStoreContent {
+open class DSContentLargeObject: DSContent {
     enum ContentType {
         case data
         case file
     }
 
-    var dataContent: DataStoreContentData?
-    var fileContent: DataStoreContentFile?
+    var dataContent: DSContentData?
+    var fileContent: DSContentFile?
     var contentType: ContentType
 
-    public var content: DataStoreContent {
+    public var content: DSContent {
         switch contentType {
         case .data: return dataContent!
         case .file: return fileContent!
@@ -33,22 +33,22 @@ open class DataStoreContentLargeObject: DataStoreContent {
 
     public init() {
         contentType = .data
-        dataContent = DataStoreContentData()
+        dataContent = DSContentData()
     }
 
     public init(data: Data) {
         contentType = .data
-        dataContent = DataStoreContentData(data: data)
+        dataContent = DSContentData(data: data)
     }
     
     public init?(fileURL: URL) {
         contentType = .file
-        fileContent = DataStoreContentFile(fileURL: fileURL)
+        fileContent = DSContentFile(fileURL: fileURL)
         guard fileContent != nil else { return nil }
     }
 }
 
-extension DataStoreContentLargeObject {
+extension DSContentLargeObject {
     public func fromData(_ data: Data) -> Error? {
         return content.fromData(data);
     }

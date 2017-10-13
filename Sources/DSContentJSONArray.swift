@@ -1,5 +1,5 @@
 //
-//  DataStoreContentJSONArray.swift
+//  DSContentJSONArray.swift
 //  DataStore
 //
 //  Copyright © 2017 Gemini Solutions. All rights reserved.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-open class DataStoreContentJSONArray<ElementType>: DataStoreContentJSON {
+open class DSContentJSONArray<ElementType>: DSContentJSON {
     var json: [ElementType]
 
     public var content: [ElementType] {

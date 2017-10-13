@@ -1,5 +1,5 @@
 //
-//  DataStoreContentJSONDictionary.swift
+//  DSContentJSONDictionary.swift
 //  DataStore
 //
 //  Copyright © 2017 Gemini Solutions. All rights reserved.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-open class DataStoreContentJSONDictionary<KeyType: Hashable, ValueType>: DataStoreContentJSON {
+open class DSContentJSONDictionary<KeyType: Hashable, ValueType>: DSContentJSON {
     var json: [KeyType:ValueType]
 
     public var content: [KeyType:ValueType] {

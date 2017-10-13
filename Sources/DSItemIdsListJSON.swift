@@ -1,5 +1,5 @@
 //
-//  DataStoreItemIdsListJSON.swift
+//  DSItemIdsListJSON.swift
 //  DataStore
 //
 //  Copyright © 2017 Gemini Solutions. All rights reserved.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class DataStoreItemIdsListJSON<ItemIdType>: DataStoreContentJSONArray<ItemIdType> {
+public class DSItemIdsListJSON<ItemIdType>: DSContentJSONArray<ItemIdType> {
     public var itemIds: [ItemIdType] {
         return content
     }
